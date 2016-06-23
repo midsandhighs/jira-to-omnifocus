@@ -24,9 +24,10 @@ Add a file named `.jira-to-omnifocus.yml` in your home diretory (e.g. `~/.jira-t
 
         ---
         jira:
-            hosname: <jira-hostname>
+            hostname: <jira-hostname>
             username: <username>
             password: <password>
+            maxResults: 100
             projects:
                 - PROJ1
                 - PROJ2
@@ -38,6 +39,7 @@ Add a file named `.jira-to-omnifocus.yml` in your home diretory (e.g. `~/.jira-t
 - **jira.hostname**: The Jira hostname to connect to.
 - **jira.username**: The username to connect with
 - **jira.password**: The password to connect with
+- **jira.maxResults**: The max number of tasks to pull down for each project.
 - **jira.projects**: A list of projects to sync with.
 - **omnifocus.context**: The context to associate jira tasks with.
 
