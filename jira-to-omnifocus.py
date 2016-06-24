@@ -2,6 +2,7 @@
 
 import yaml
 import subprocess
+from sys import argv
 from jira import JIRA
 from os.path import expanduser
 
@@ -55,7 +56,8 @@ tell application "OmniFocus"
 	try
 		set theProject to first flattened project of default document whose name starts with theProjectKey
 	on error theError
-	    display dialog "Project does not exist: " & theProjectKey
+	    -- display dialog "Project does not exist: " & theProjectKey
+	    return theError
 	end try
 
 	if not (exists (first flattened task of default document whose name starts with theTaskKey)) then
@@ -112,14 +114,18 @@ with open(optsPath, 'r') as optsFile:
         print(ex)
         exit()
 
+# Capture any arguments and replace them as
+# the projects to be retrieved
+if len(argv) > 1:
+    projects = argv[1:]
+else:
+    projects = opts['jira']['projects']
 
 # Connect to Jira and retrieve issues
 print "Connecting to {}...".format(opts['jira']['hostname'])
 
 jira = JIRA(server=opts['jira']['hostname'],
             basic_auth=(opts['jira']['username'], opts['jira']['password']))
-
-projects = opts['jira']['projects']
 
 for project in projects:
 

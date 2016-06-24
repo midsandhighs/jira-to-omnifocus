@@ -25,6 +25,9 @@ then a new task is created within OmniFocus for the current project.
 - If a task is found that matches the current Jira issue key and issue status is one of the
 status indicators found in the `completedStatus` config, then the OmniFocus task is marked as complete.
 - Only OmniFocus tasks within the configured context are completed. Others will be ignored.
+- If you pass a set of arguments to the script (e.g. `jira-to-omnifocus.py PROJ1 PROJ2`), then those arguments
+will override the configured projects to be retrieved (i.e. it will only retrieve the projects with
+keys that match the passed in arguments)
 
 ## Useage
 
