@@ -5,8 +5,7 @@ A script to synchronize Jira issues with OmniFocus.
 ## What does it do?
 
 This script connects to the Jira REST API via basic auth to
-sync Jira issues with OmniFocus. It currently syncs a given set of projects
-and only issues that are assigned to `currentUser()` in Jira.
+sync Jira issues with OmniFocus.
 
 It uses `osascript` to run dynamic AppleScript snippets that update and create tasks in OmniFocus.
 
@@ -16,7 +15,7 @@ See the configuration section below for details on how to configure the options.
 
 - Only projects listed in the `.jira-to-omnifocus.yml` file will be retrieved.
     - A synced project must exist in OmniFocus before running the script
-    - OmniFocus project names should start with the Jira project key (e.g. PROJ)
+    - OmniFocus project names should start with the Jira project key followed by a hyphen (e.g. "PROJ - ")
 - Only issues associated with the currently logged in Jira user will be retrieved.
 - If an OmniFocus task cannot be found that starts with the current Jira issue key (e.g. PROJ-1),
 then a new task is created within OmniFocus for the current project.
