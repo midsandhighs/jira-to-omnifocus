@@ -70,6 +70,7 @@ tell application "OmniFocus"
 
 		-- Create the transport text
 		set theTransportText to theTaskName & " @" & theContext & " ::" & name of theProject
+		set theTransportText to theTransportText & " //https://sensory5.atlassian.net/browse/" & theTaskKey
 
 		-- parse into a task
 		parse tasks into default document with transport text theTransportText
