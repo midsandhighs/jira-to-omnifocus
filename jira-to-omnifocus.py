@@ -13,6 +13,12 @@ DEFAULT_MAX_RESULTS = 100
 DEFAULT_JQL = 'project="{}" and assignee = currentUser()'
 DEFAULT_COMPLETED_STATUS = ['Done', 'Closed', 'Resolved']
 
+NOTIFICATION_SCRIPT = '''
+
+display notification {0} with title {1}
+
+'''
+
 COMPLETE_SCRIPT = '''
 tell application "OmniFocus"
 
@@ -87,6 +93,10 @@ def asquote(astr):
   astr = astr.replace('"', '" & quote & "')
   return '"{}"'.format(astr)
 
+def notify(message, title):
+    asrun(NOTIFICATION_SCRIPT.format(asquote(message),
+                                     asquote(title)))
+
 def complete_task(projectKey, taskKey):
     "Complete the task if found in OmniFocus."
 
@@ -121,21 +131,29 @@ if len(argv) > 1:
 else:
     projects = opts['jira']['projects']
 
+showNotification = opts['jira'].get('showNotifications', False)
+
 # Connect to Jira and retrieve issues
-print "Connecting to {}...".format(opts['jira']['hostname'])
+# print "Connecting to {}...".format(opts['jira']['hostname'])
+if showNotification:
+    notify("Connecting to {0}".format(opts['jira']['hostname']), "Jira to OmniFocus")
 
 jira = JIRA(server=opts['jira']['hostname'],
             basic_auth=(opts['jira']['username'], opts['jira']['password']))
 
 for project in projects:
 
-    print("Reviewing project {}...".format(project))
+    # print("Reviewing project {}...".format(project))
+    if showNotification:
+        notify("Syncing {}".format(project), "Jira to OmniFocus Project")
 
     jql = opts['jira'].get('jql', DEFAULT_JQL).format(project)
     statusOpts = opts['jira'].get('completedStatus', DEFAULT_COMPLETED_STATUS)
     maxResults = opts['jira'].get('maxResults', DEFAULT_MAX_RESULTS)
 
     for issue in jira.search_issues(jql, maxResults=maxResults):
+
+
         if str(issue.fields.status) in statusOpts:
             # print ("-- {}, {}".format(issue.key, issue.fields.status))
             complete_task(project, issue.key)

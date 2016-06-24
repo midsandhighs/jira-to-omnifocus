@@ -61,6 +61,7 @@ Add a file named `.jira-to-omnifocus.yml` in your home diretory (e.g. `~/.jira-t
             password: <password>
             jql: 'project="{}" and assignee = currentUser()'
             maxResults: 100
+            showNotifications: true
             projects:
                 - PROJ1
                 - PROJ2
@@ -76,11 +77,12 @@ Add a file named `.jira-to-omnifocus.yml` in your home diretory (e.g. `~/.jira-t
 - **jira.hostname**: The Jira hostname to connect to. **(REQUIRED)**
 - **jira.username**: The username to connect with. **(REQUIRED)**
 - **jira.password**: The password to connect with. **(REQUIRED)**
-- **jira.jql**: The jql passed to Jira. Note that you must have a placeholder for the project key in the jql. _(optional)_
-- **jira.maxResults**: The max number of tasks to pull down for each project. _(optional)_
-- **jira.completedStatus**: The list of status indicators that constitute a completed task. _(optional)_
 - **jira.projects**: A list of projects to sync with. **(REQUIRED)**
 - **omnifocus.context**: The context to associate jira tasks with. **(REQUIRED)**
+- **jira.jql**: The jql passed to Jira. Note that you must have a placeholder for the project key in the jql. _(optional, default: `project="{}" and assignee = currentUser()`)_
+- **jira.maxResults**: The max number of tasks to pull down for each project. _(optional: 100)_
+- **jira.completedStatus**: The list of status indicators that constitute a completed task. _(optional, default: Done, Closed, Resolved)_
+- **jira.showNotifications**: If true, shows a notification for each project synced in the loop. _(optional, default: false)_
 
 ## Credits
 
