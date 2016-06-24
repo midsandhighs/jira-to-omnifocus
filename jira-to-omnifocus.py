@@ -8,23 +8,10 @@ from os.path import expanduser
 opts = {}
 optsPath = expanduser("~/.jira-to-omnifocus.yml")
 
-def asrun(ascript):
-  "Run the given AppleScript and return the standard output and error."
+DEFAULT_MAX_RESULTS = 100
+DEFAULT_JQL = 'project="{}" and assignee = currentUser()'
 
-  osa = subprocess.Popen(['osascript', '-'],
-                         stdin=subprocess.PIPE,
-                         stdout=subprocess.PIPE)
-  return osa.communicate(ascript)[0]
-
-def asquote(astr):
-  "Return the AppleScript equivalent of the given string."
-
-  astr = astr.replace('"', '" & quote & "')
-  return '"{}"'.format(astr)
-
-def complete_task(projectKey, taskKey):
-
-    ascript = '''
+COMPLETE_SCRIPT = '''
 tell application "OmniFocus"
 
     set theTaskKey to {1}
@@ -54,14 +41,9 @@ tell application "OmniFocus"
     end tell
 
 end tell
-        '''.format(asquote(projectKey + " - "), asquote(taskKey), asquote(opts['omnifocus']['context']))
+'''
 
-    asrun(ascript)
-
-def create_task(projectKey, taskKey, taskName):
-
-
-    ascript = '''
+CREATE_SCRIPT = '''
 tell application "OmniFocus"
 
 	set theTaskKey to {1}
@@ -86,10 +68,42 @@ tell application "OmniFocus"
 	end if
 
 end tell
-        '''.format(asquote(projectKey + " - "), asquote(taskKey), asquote(taskName), asquote(opts['omnifocus']['context']))
+'''
+
+def asrun(ascript):
+  "Run the given AppleScript and return the standard output and error."
+
+  osa = subprocess.Popen(['osascript', '-'],
+                         stdin=subprocess.PIPE,
+                         stdout=subprocess.PIPE)
+  return osa.communicate(ascript)[0]
+
+def asquote(astr):
+  "Return the AppleScript equivalent of the given string."
+
+  astr = astr.replace('"', '" & quote & "')
+  return '"{}"'.format(astr)
+
+def complete_task(projectKey, taskKey):
+    "Complete the task if found in OmniFocus."
+
+    ascript = COMPLETE_SCRIPT.format(asquote(projectKey + " - "),
+                                     asquote(taskKey),
+                                     asquote(opts['omnifocus']['context']))
 
     asrun(ascript)
 
+def create_task(projectKey, taskKey, taskName):
+    "Create the task if not found in OmniFocus."
+
+    ascript = CREATE_SCRIPT.format(asquote(projectKey + " - "),
+                                   asquote(taskKey),
+                                   asquote(taskName),
+                                   asquote(opts['omnifocus']['context']))
+
+    asrun(ascript)
+
+# Open the configuration file and retrieve options
 with open(optsPath, 'r') as optsFile:
     try:
         opts = yaml.load(optsFile)
@@ -97,23 +111,27 @@ with open(optsPath, 'r') as optsFile:
         print(ex)
         exit()
 
+
+# Connect to Jira and retrieve issues
 print "Connecting to {}...".format(opts['jira']['hostname'])
 
-jira = JIRA(server=opts['jira']['hostname'],basic_auth=(opts['jira']['username'], opts['jira']['password']))
+jira = JIRA(server=opts['jira']['hostname'],
+            basic_auth=(opts['jira']['username'], opts['jira']['password']))
 
 projects = opts['jira']['projects']
 
 for project in projects:
-    print("Reviewing project {}...".format(project))
-    jql = "project=\"{}\" and assignee = currentUser()".format(project)
-    for issue in jira.search_issues(jql,maxResults=opts['jira']['maxResults']):
-        if str(issue.fields.status) in ["Done", "Closed", "Resolved"]:
 
+    print("Reviewing project {}...".format(project))
+
+    jql = opts['jira'].get('jql', DEFAULT_JQL).format(project)
+
+    for issue in jira.search_issues(jql,maxResults=opts['jira'].get('maxResults', DEFAULT_MAX_RESULTS)):
+        # if str(issue.fields.status) in ["Done", "Closed", "Resolved"]:
+        if str(issue.fields.status) in opts['jira']['completedStatus']:
             # print ("-- {}, {}".format(issue.key, issue.fields.status))
             complete_task(project, issue.key)
-
         else:
-
             # print ("-- {0}, {1}, {2}".format(issue.key, issue.fields.summary, issue.fields.status))
             create_task(project, issue.key, issue.key + " " + issue.fields.summary)
 
