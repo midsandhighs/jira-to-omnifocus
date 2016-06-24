@@ -75,6 +75,7 @@ Add a file named `.jira-to-omnifocus.yml` in your home diretory (e.g. `~/.jira-t
 - **jira.password**: The password to connect with. **(REQUIRED)**
 - **jira.jql**: The jql passed to Jira. Note that you must have a placeholder for the project key in the jql. _(optional)_
 - **jira.maxResults**: The max number of tasks to pull down for each project. _(optional)_
+- **jira.completedStatus**: The list of status indicators that constitute a completed task. _(optional)_
 - **jira.projects**: A list of projects to sync with. **(REQUIRED)**
 - **omnifocus.context**: The context to associate jira tasks with. **(REQUIRED)**
 

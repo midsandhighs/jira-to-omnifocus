@@ -10,6 +10,7 @@ optsPath = expanduser("~/.jira-to-omnifocus.yml")
 
 DEFAULT_MAX_RESULTS = 100
 DEFAULT_JQL = 'project="{}" and assignee = currentUser()'
+DEFAULT_COMPLETED_STATUS = ['Done', 'Closed', 'Resolved']
 
 COMPLETE_SCRIPT = '''
 tell application "OmniFocus"
@@ -125,10 +126,11 @@ for project in projects:
     print("Reviewing project {}...".format(project))
 
     jql = opts['jira'].get('jql', DEFAULT_JQL).format(project)
+    statusOpts = opts['jira'].get('completedStatus', DEFAULT_COMPLETED_STATUS)
+    maxResults = opts['jira'].get('maxResults', DEFAULT_MAX_RESULTS)
 
-    for issue in jira.search_issues(jql,maxResults=opts['jira'].get('maxResults', DEFAULT_MAX_RESULTS)):
-        # if str(issue.fields.status) in ["Done", "Closed", "Resolved"]:
-        if str(issue.fields.status) in opts['jira']['completedStatus']:
+    for issue in jira.search_issues(jql, maxResults=maxResults):
+        if str(issue.fields.status) in statusOpts:
             # print ("-- {}, {}".format(issue.key, issue.fields.status))
             complete_task(project, issue.key)
         else:
