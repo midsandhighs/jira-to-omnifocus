@@ -39,11 +39,11 @@ I'm sure this could be automated with something like `launchd`, but I didn't wan
 
 ## Requirements
 
-- **PyYaml** 3.11+
+- [PyYaml](https://pypi.python.org/pypi/PyYAML) 3.11+
 
         pip install PyYaml
 
-- **Jira** 1.07+
+- [Jira](https://pypi.python.org/pypi/jira) 1.07+
 
         pip install jira
 
