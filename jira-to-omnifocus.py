@@ -1,5 +1,6 @@
 # Jira to OmniFocus
 
+
 import yaml
 import subprocess
 from sys import argv
@@ -24,7 +25,7 @@ tell application "OmniFocus"
 
     set theTaskKey to {1}
     set theProjectKey to {0}
-    set theContext to {2}
+    set theTag to {2}
 
     tell default document
 
@@ -38,7 +39,7 @@ tell application "OmniFocus"
 
             set selectedTask to first flattened task whose name starts with theTaskKey
 
-            if name of context of selectedTask = theContext then
+            if name of tag of selectedTask = theTag then
                 if (not completed of selectedTask) then
                     set completed of selectedTask to true
                 end if
@@ -56,7 +57,7 @@ tell application "OmniFocus"
 
 	set theTaskKey to {1}
 	set theTaskName to {2}
-	set theContext to {3}
+	set theTag to {3}
 	set theProjectKey to {0}
 
 	try
@@ -103,7 +104,7 @@ def complete_task(projectKey, taskKey):
 
     ascript = COMPLETE_SCRIPT.format(asquote(projectKey + " - "),
                                      asquote(taskKey),
-                                     asquote(opts['omnifocus']['context']))
+                                     asquote(opts['omnifocus']['tag']))
 
     asrun(ascript)
 
@@ -113,7 +114,7 @@ def create_task(projectKey, taskKey, taskName):
     ascript = CREATE_SCRIPT.format(asquote(projectKey + " - "),
                                    asquote(taskKey),
                                    asquote(taskName),
-                                   asquote(opts['omnifocus']['context']))
+                                   asquote(opts['omnifocus']['tag']))
 
     asrun(ascript)
 
@@ -156,9 +157,9 @@ for project in projects:
 
 
         if str(issue.fields.status) in statusOpts:
-            # print ("-- {}, {}".format(issue.key, issue.fields.status))
+            print ("-- {}, {}".format(issue.key, issue.fields.status))
             complete_task(project, issue.key)
         else:
-            # print ("-- {0}, {1}, {2}".format(issue.key, issue.fields.summary, issue.fields.status))
+            print ("-- {0}, {1}, {2}".format(issue.key, issue.fields.summary, issue.fields.status))
             create_task(project, issue.key, issue.key + " " + issue.fields.summary)
 

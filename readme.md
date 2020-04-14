@@ -2,6 +2,8 @@
 
 A script to synchronize Jira issues with OmniFocus.
 
+This appears to be out of date - and doesn't 
+
 ## What does it do?
 
 This script connects to the Jira REST API via basic auth to
